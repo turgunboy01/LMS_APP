@@ -9,102 +9,88 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
-const FormController = ({ formController = [], formData, setFormData }) => {
-  const renderComponentByType = (getControlItem) => {
-    let element = null;
-    const currentControlItemValue = formData[getControlItem.name] || "";
+const FormController = ({
+  formController = [],
+  formData = {},
+  setFormData,
+}) => {
+  // Umumiy qiymatni o'zgartirish funksiyasi
+  const handleInputChange = (name, value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-    switch (getControlItem.componentType) {
+  // Turga qarab komponent yaratish
+  const renderComponentByType = ({
+    name,
+    placeholder,
+    type,
+    options,
+    label,
+    componentType,
+  }) => {
+    const currentValue = formData[name] || ""; // Undefined holatlar uchun bo'sh qiymat
+
+    switch (componentType) {
       case "input":
-        element = (
+        return (
           <Input
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.name}
-            name={getControlItem.name}
-            type={getControlItem.type}
-            value={currentControlItemValue}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
+            placeholder={placeholder}
+            id={name}
+            name={name}
+            type={type || "text"}
+            value={currentValue}
+            onChange={(e) => handleInputChange(name, e.target.value)}
           />
         );
-        break;
 
       case "select":
-        element = (
+        return (
           <Select
-            onValueChange={(value) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: value,
-              })
-            }
-            value={currentControlItemValue}
+            value={currentValue}
+            onValueChange={(value) => handleInputChange(name, value)}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={getControlItem.label} />
+              <SelectValue placeholder={label} />
             </SelectTrigger>
             <SelectContent>
-              {getControlItem.options && getControlItem.options.length > 0
-                ? getControlItem.options.map((optionItem) => (
-                    <SelectItem key={optionItem.id} value={optionItem.value}>
-                      {optionItem.label}
-                    </SelectItem>
-                  ))
-                : null}
+              {options?.map((option) => (
+                <SelectItem key={option.id} value={option.id}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         );
-        break;
 
       case "textarea":
-        element = (
+        return (
           <Textarea
-            id={getControlItem.name}
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
-            value={currentControlItemValue}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
+            id={name}
+            name={name}
+            placeholder={placeholder}
+            value={currentValue}
+            onChange={(e) => handleInputChange(name, e.target.value)}
           />
         );
-        break;
 
       default:
-        element = (
-          <Input
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.name}
-            name={getControlItem.name}
-            type={getControlItem.type}
-            value={currentControlItemValue}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
-          />
+        return (
+          <p className="text-red-500">
+            Noto'g'ri komponent turi: {componentType}
+          </p>
         );
-        break;
     }
-
-    return element;
   };
 
   return (
     <div className="flex flex-col gap-3">
-      {formController.map((controleItem) => (
-        <div key={controleItem.name}>
-          <Label htmlFor={controleItem.name}>{controleItem.label}</Label>
-          {renderComponentByType(controleItem)}
+      {formController.map((controlItem) => (
+        <div key={controlItem.name} className="flex flex-col">
+          <Label htmlFor={controlItem.name}>{controlItem.label}</Label>
+          {renderComponentByType(controlItem)}
         </div>
       ))}
     </div>

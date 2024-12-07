@@ -8,7 +8,8 @@ const authenticate = require("../../middleware/auth-middleware");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.post("/ceck-auth", authenticate, (req, res) => {
+
+router.get("/check-auth", authenticate, (req, res) => {
   const user = req.user;
   res.status(200).json({
     success: true,

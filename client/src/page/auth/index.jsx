@@ -21,6 +21,7 @@ const AuthPage = () => {
     signUpFormData,
     setSignUpFormData,
     handleRegisterUser,
+    handleLoginUser,
   } = useContext(AuthContext);
 
   const handleChange = (value) => {
@@ -43,7 +44,6 @@ const AuthPage = () => {
       signUpFormData.password?.trim() !== ""
     );
   };
-  console.log(signInFormData, "auth");
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -79,6 +79,7 @@ const AuthPage = () => {
                   setFormData={setSignInFormData}
                   buttonText="Sign In"
                   isButtonDisabled={!checkIfSignInFormIsValid()}
+                  handleSubmit={handleLoginUser}
                 />
               </CardContent>
             </Card>
